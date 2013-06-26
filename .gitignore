@@ -1,0 +1,13 @@
+*.suo
+*.user
+[Bb]in
+!/tools/*/bin
+[Oo]bj
+_ReSharper*
+*.user
+*.suo
+*.cache
+TestResult.xml
+compiled
+build/
+Visual Studio 2010/

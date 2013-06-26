@@ -1,0 +1,113 @@
+﻿@model TinyMCE4Filemanager.ViewModels.UploadViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<html>
+    <head>
+        <link rel="stylesheet" href="@Url.Content("~/Content/dropzone.css")" media="all">
+        <link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.min.css")" media="all" />
+        <link rel="stylesheet" href="@Url.Content("~/Content/Site.css")" media="all"/>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/dropzone.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.imglist.js")"></script>
+        <script>
+            var allowed_ext = new Array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff');
+
+            //dropzone config
+            Dropzone.options.myAwesomeDropzone = {
+                dictInvalidFileType: "Invalid file type ",
+                dictFileTooBig: "File is to big to upload",
+                dictResponseError: "SERVER ERROR",
+                paramName: "file", // The name that will be used to transfer the file
+                maxFilesize: 3000, // MB
+                accept: function(file, done) {
+                    var extension=file.name.split('.').pop();
+                    if ($.inArray(extension, allowed_ext) > -1) {
+                        done();
+                    }
+                    else { done("Done"); }
+                }
+            };
+           
+
+        </script>        
+    </head>
+    <body>
+        <input type="hidden" id="track" value="@Model.track" />
+
+        <!----- uploader div start ------->
+        <div class="uploader">
+            
+            @using (Html.BeginForm("UploadFile", "Upload", FormMethod.Post, new { id = "myAwesomeDropzone", @class = "dropzone" }))
+            {
+                <div class="fallback">
+                    <input name="file" type="file" multiple />
+                </div>                
+            }                        
+            <center><button class="btn btn-large btn-primary close-uploader"><i class="icon-backward icon-white"></i> Return to file list</button></center>
+            <div class="space10"></div><div class="space10"></div>
+        </div>
+        <!----- uploader div start ------->
+        
+        <div class="container-fluid">
+
+            <!----- header div start -->
+                <div class="filters">
+                    <button class="btn btn-primary upload-btn" style="margin-left:5px;"><i class="icon-upload icon-white"></i> Upload file</button> 
+                    <!-- figure out sorting function later 
+                    <div class="pull-right">Filter: &nbsp;&nbsp;
+                        <input id="select-type-all" name="radio-sort" type="radio" data-item="ff-item-type-all" class="hide" />
+                        <label id="ff-item-type-all" for="select-type-all" class="btn btn-info ff-label-type-all">All</label>
+                        &nbsp;
+                        <input id="select-type-1" name="radio-sort" type="radio" data-item="ff-item-type-1" checked="checked"  class="hide"  />
+                        <label id="ff-item-type-1" for="select-type-1" class="btn ff-label-type-1">Files</label>
+                        &nbsp;
+                        <input id="select-type-2" name="radio-sort" type="radio" data-item="ff-item-type-2" class="hide"  />
+                        <label id="ff-item-type-2" for="select-type-2" class="btn ff-label-type-2">Images</label>
+                        &nbsp;
+                        <input id="select-type-3" name="radio-sort" type="radio" data-item="ff-item-type-3" class="hide"  />
+                        <label id="ff-item-type-3" for="select-type-3" class="btn ff-label-type-3">Archive</label>
+                        &nbsp;
+                        <input id="select-type-4" name="radio-sort" type="radio" data-item="ff-item-type-4" class="hide"  />
+                        <label id="ff-item-type-4" for="select-type-4" class="btn ff-label-type-4">Videos</label>
+                        &nbsp;
+                        <input id="select-type-5" name="radio-sort" type="radio" data-item="ff-item-type-5" class="hide"  />
+                        <label id="ff-item-type-5" for="select-type-5" class="btn ff-label-type-5">Music</label>
+                    </div>-->
+                </div>
+                <!-- header div end ------->
+            <div class="row-fluid ff-container">
+                <div id="ff-container" class="span12 pull-right"></div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $("#ff-container").imageList({
+                    connector: '@Url.Action("ListFiles")',
+                    imgcontainer: "ff-container"
+                });
+
+                $('.upload-btn').click(function () {
+                    $('.uploader').show(500);
+                    $('.ff-container').hide();
+                });
+                $('.close-uploader').click(function () {
+                    $('.uploader').hide(500);
+                    window.location.reload();
+                });
+
+
+            });
+
+            $(document).on('click', '.thumbnail', function() {
+                var track = $('#track').val();
+                var target = window.parent.document.getElementsByClassName('mce-img_' + track);
+                var closed = window.parent.document.getElementsByClassName('mce-filemanager');
+                $(target).val($(this).attr("src"));
+                $(closed).find('.mce-close').trigger('click');
+            });
+            
+        </script>
+    </body>
+</html>
